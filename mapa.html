@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Partiu?</title>
+<link rel="icon" href="assets/capa-badge.jpg" type="image/jpeg">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mapa.css">
+</head>
+<body class="mapa-standalone" data-screen="mapa">
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></symbol>
+</svg>
+<header class="app-head">
+  <div class="app-head__in">
+    <a class="brand" href="index.html#/inicio" aria-label="Partiu? — página inicial"><img src="assets/capa-badge.jpg" width="640" height="640" alt="Partiu? — Educação patrimonial e divulgação histórico-cultural do Rio de Janeiro"></a>
+    <p class="mapa-titulo">Mapa do patrimônio</p>
+    <a class="nav-link nav-link--solo" href="index.html#/explorar"><svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg><span>Voltar ao app</span></a>
+  </div>
+</header>
+<div id="map" role="region" aria-label="Mapa dos patrimônios do Rio de Janeiro"></div>
+<div id="map-status" class="map-status" role="status" aria-live="polite"></div>
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script src="js/patrimonios-data.js"></script>
+<script src="js/progresso.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/mapa.js"></script>
+<script src="js/mapa-pagina.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Partiu?</title>
+  <meta name="description" content="Partiu?">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#3D3028">
+  <link rel="icon" href="assets/capa-badge.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/telas.css">
+  <link rel="stylesheet" href="css/mapa.css">
+</head>
+
+<body>
+
+  <!-- Ícones (traço único, herdam a cor do texto) -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-star" viewBox="0 0 24 24">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+      <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </symbol>
+    <symbol id="i-pin-off" viewBox="0 0 24 24">
+      <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z" stroke-dasharray="3 3" />
+      <path d="M9.5 7.5l5 5M14.5 7.5l-5 5" />
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M17 8.5 10.5 15.5 7 12" />
+    </symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+      <path d="M4 22h16" />
+      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+    </symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24">
+      <path d="M3 22h18" />
+      <path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7" />
+      <path d="M12 2 20 7H4l8-5Z" />
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
+    </symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.5 8.5-2 5-5 2 2-5 5-2z" />
+    </symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24">
+      <path d="M5 21V4" />
+      <path d="M5 4h11l-2 4 2 4H5" />
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-4-4" />
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24">
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24">
+      <path d="M19 12H5" />
+      <path d="m11 6-6 6 6 6" />
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </symbol>
+    <symbol id="i-map" viewBox="0 0 24 24">
+      <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+      <path d="M9 4v14M15 6v14" />
+    </symbol>
+    <symbol id="i-list" viewBox="0 0 24 24">
+      <path d="M8 6h13M8 12h13M8 18h13" />
+      <circle cx="4" cy="6" r="1" />
+      <circle cx="4" cy="12" r="1" />
+      <circle cx="4" cy="18" r="1" />
+    </symbol>
+    <symbol id="i-image" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="9" cy="10" r="2" />
+      <path d="m21 16-5-5-8 8" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 8h.01" />
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M10 8.5v7l6-3.5z" />
+    </symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+    </symbol>
+    <symbol id="i-help" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" />
+    </symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24">
+      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+    </symbol>
+  </svg>
+
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="app-head">
+    <div class="app-head__in">
+      <a class="brand" href="#/inicio" aria-label="Partiu? — página inicial">
+        <img src="assets/capa-badge.jpg" width="640" height="640"
+          alt="Partiu? — Educação patrimonial e divulgação histórico-cultural do Rio de Janeiro">
+      </a>
+      <nav class="app-nav" aria-label="Principal">
+        <a class="nav-link" href="#/inicio" data-nav="scr-inicio"><svg class="icon" aria-hidden="true">
+            <use href="#i-home" />
+          </svg><span>Início</span></a>
+        <a class="nav-link" href="#/explorar" data-nav="scr-explorar"><svg class="icon" aria-hidden="true">
+            <use href="#i-compass" />
+          </svg><span>Explorar</span></a>
+        <a class="nav-link" href="#/missoes" data-nav="scr-missoes"><svg class="icon" aria-hidden="true">
+            <use href="#i-flag" />
+          </svg><span>Missões</span></a>
+        <a class="nav-link" href="#/perfil" data-nav="scr-perfil"><svg class="icon" aria-hidden="true">
+            <use href="#i-user" />
+          </svg><span data-partiu-name>Perfil</span></a>
+      </nav>
+      <a class="xp-chip" href="#/perfil" id="xp-chip" hidden></a>
+    </div>
+  </header>
+
+  <main id="conteudo" tabindex="-1">
+
+    <p class="aviso-topo" id="aviso-armazenamento" role="status" hidden>Seu navegador não permitiu salvar o progresso
+      (modo privado ou armazenamento cheio). Ele vale só enquanto esta aba estiver aberta.</p>
+    <noscript>
+      <p class="aviso-topo">O Partiu? precisa de JavaScript ativado para funcionar. Ative-o nas configurações do
+        navegador e recarregue a página.</p>
+    </noscript>
+
+    <section class="screen on" id="scr-capa" data-title="Partiu?"></section>
+
+    <section class="screen" id="scr-acesso" data-title="Entrar">
+      <div class="auth">
+        <img class="auth__logo" src="assets/capa-badge.jpg" width="640" height="640" alt="Partiu? — logo oficial">
+        <div class="card auth__card" id="acesso-conteudo"></div>
+        <p class="footer-note">Demonstração local: o perfil e o progresso ficam salvos só neste navegador. Não há senha
+          nem sincronização entre aparelhos.</p>
+        <p class="auth__back"><a class="link-btn" href="#/capa"><svg class="icon" aria-hidden="true">
+              <use href="#i-arrow-left" />
+            </svg> Voltar à capa</a></p>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-criar" data-title="Criar perfil">
+      <div class="auth">
+        <img class="auth__logo" src="assets/capa-badge.jpg" width="640" height="640" alt="Partiu? — logo oficial">
+        <div class="card auth__card">
+          <h1 class="t-title">Crie seu perfil</h1>
+          <p class="muted">Só um apelido. Ele aparece no seu perfil e fica salvo neste navegador.</p>
+          <form id="partiu-signup-form" novalidate>
+            <div class="field"><label for="partiu-signup-name">Apelido</label><input id="partiu-signup-name"
+                autocomplete="nickname" maxlength="30" required placeholder="Como quer ser chamado?"
+                aria-describedby="signup-error"></div>
+            <p class="form-error" id="signup-error" role="alert"></p>
+            <button class="btn btn-primary btn-block" type="submit">Começar a jornada</button>
+          </form>
+        </div>
+        <p class="auth__back"><a class="link-btn" href="#/acesso"><svg class="icon" aria-hidden="true">
+              <use href="#i-arrow-left" />
+            </svg> Voltar</a></p>
+      </div>
+    </section>
+
+    <section class="screen" id="scr-inicio" data-title="Início"></section>
+    <section class="screen" id="scr-explorar" data-title="Explorar"></section>
+    <section class="screen" id="scr-regiao" data-title="Região"></section>
+    <section class="screen" id="scr-bairro" data-title="Bairro"></section>
+    <section class="screen" id="scr-patrimonio" data-title="Patrimônio"></section>
+    <section class="screen" id="scr-missoes" data-title="Missões"></section>
+    <section class="screen" id="scr-quiz" data-title="Quiz"></section>
+    <section class="screen" id="scr-perfil" data-title="Perfil"></section>
+
+    <footer class="site-foot">
+      <p>Partiu? · educação patrimonial e divulgação histórico-cultural do Rio de Janeiro.</p>
+      <p id="foot-demo" hidden>Conteúdo em construção: nomes, localizações e textos ainda estão sendo validados. O
+        progresso fica salvo só neste navegador.</p>
+    </footer>
+  </main>
+
+  <dialog class="dlg" id="dlg" aria-labelledby="dlg-titulo"></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/patrimonios-data.js"></script>
+  <script src="js/desafios.js"></script>
+  <script src="js/progresso.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/navegacao.js"></script>
+  <script src="assets/vendor/leaflet/leaflet.js"></script>
+  <script src="js/mapa.js"></script>
+  <script src="js/explorar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+/* ==========================================================================
+   PARTIU? — Explorar (busca, filtros, lista, mapa) e detalhes do Leaflet
+   ========================================================================== */
+
+/* Contêiner do mapa */
+#map{position:relative;z-index:0;isolation:isolate;width:100%;height:100%;min-height:18rem;background:var(--creme);font-family:var(--font-text)}
+.leaflet-tile-pane{filter:sepia(.22) saturate(.85) hue-rotate(-6deg)}   /* aquece o mapa-base para combinar com a paleta */
+.leaflet-container a{color:var(--action-ink)}
+
+/* Mapa em tela cheia (mapa.html) */
+.mapa-standalone{margin:0;display:flex;flex-direction:column;height:100vh}
+@supports (height:1dvh){.mapa-standalone{height:100dvh}}
+.mapa-standalone #map{flex:1 1 auto;height:auto}
+.mapa-titulo{font-family:var(--font-display);font-size:var(--fs-xl);color:var(--dourado)}
+.mapa-standalone .app-head{position:static}
+
+/* Mensagens de estado */
+.map-status{font-size:var(--fs-sm);color:var(--muted)}
+.map-status:empty{display:none}
+.map-status p{margin:0;padding:var(--sp-2) 0}
+.mapa-standalone .map-status{background:var(--surface);border-top:2px solid var(--marrom)}
+.mapa-standalone .map-status p{padding:var(--sp-2) var(--sp-4)}
+.map-status p.is-error{color:var(--danger);font-weight:600}
+.map-status p[hidden]{display:none}
+
+/* Marcadores: pino terracota; explorado = oliva; aproximado = tracejado; selecionado = dourado maior */
+.partiu-pin{background:none;border:0}
+.partiu-pin span{display:block;position:relative;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--terracota);border:3px solid var(--marrom);box-shadow:0 2px 5px rgba(0,0,0,.35)}
+.partiu-pin span::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--dourado)}
+.partiu-pin--done span{background:var(--oliva)}
+.partiu-pin--aprox span{border-style:dashed}
+.partiu-pin--sel span{background:var(--dourado);border-width:4px;transform:rotate(-45deg) scale(1.3);transform-origin:50% 100%}
+.partiu-pin--sel span::after{background:var(--marrom)}
+.leaflet-marker-icon:focus-visible span{outline:3px solid var(--marrom);outline-offset:3px}
+
+/* Janela de informações (mapa.html) */
+.leaflet-popup-content-wrapper{border-radius:var(--radius-sm);border:2px solid var(--marrom);color:var(--ink)}
+.leaflet-popup-tip{background:var(--surface);border:2px solid var(--marrom)}
+.leaflet-popup-content{margin:14px 16px;font-size:.95rem;line-height:1.45}
+.partiu-popup h4{font-family:var(--font-display);font-size:1.15rem;margin:0 0 4px}
+.partiu-popup .meta{font-size:.8rem;color:var(--muted);margin:0 0 8px}
+.partiu-popup p{margin:0 0 8px}
+.partiu-popup p.empty{font-style:italic;color:var(--muted)}
+.partiu-popup .link{display:inline-flex;align-items:center;gap:6px;margin-top:4px;font-weight:700;color:var(--marrom)}
+
+/* Explorar: barra de busca e filtros */
+.ex-bar{display:grid;gap:var(--sp-3);margin-bottom:var(--sp-4);padding:var(--sp-4);background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.ex-busca{position:relative}
+.ex-busca .icon{position:absolute;left:var(--sp-4);top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.ex-busca input{width:100%;min-height:3rem;padding:var(--sp-2) var(--sp-4) var(--sp-2) 3rem;border:var(--bw) solid var(--marrom);border-radius:999px;background:var(--paper)}
+.ex-selects{display:grid;gap:var(--sp-3);grid-template-columns:repeat(auto-fit,minmax(10rem,1fr))}
+.ex-selects:not(:has(.sel:not([hidden]))){display:none}
+.sel{display:grid;gap:2px;font-size:.8125rem;font-weight:700}
+.sel select{min-height:var(--tap);border:var(--bw) solid var(--marrom);border-radius:var(--radius-sm);padding:0 var(--sp-3);background:var(--surface);font-weight:400;font-size:var(--fs-base)}
+.ex-resumo{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1) var(--sp-4)}
+.ex-cont{flex:1 1 auto;font-weight:700;font-size:var(--fs-sm)}
+.vista-tabs{display:none}
+
+/* Explorar: lista + mapa */
+.ex-grid{display:grid;gap:var(--sp-4);grid-template-columns:minmax(0,1fr)}
+.ex-lista{min-width:0;display:flex;flex-direction:column}
+.ex-mapa{position:relative;min-width:0;height:clamp(22rem,64dvh,40rem);border:var(--bw) solid var(--marrom);border-radius:var(--radius);overflow:hidden;background:var(--creme)}
+.itens{display:grid;gap:var(--sp-2)}
+.item{position:relative;display:grid;grid-template-columns:1fr auto;align-items:stretch;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.item--sel{border-color:var(--marrom);border-width:2px;box-shadow:0 0 0 3px color-mix(in srgb,var(--dourado) 55%,transparent)}
+.item--ok{background:color-mix(in srgb,var(--oliva) 7%,#fff)}
+.item__main{display:grid;grid-template-columns:3.5rem 1fr;gap:var(--sp-3);align-items:center;padding:var(--sp-2);background:none;border:0;text-align:left;min-width:0}
+.item__main:hover{background:var(--paper)}
+.item__main:focus-visible{outline-offset:-4px}
+.item__txt{display:grid;gap:2px;min-width:0}
+.item__txt strong{font-family:var(--font-display);font-weight:400;font-size:var(--fs-base);line-height:1.15;color:var(--marrom)}
+.item__meta{font-size:.8125rem;color:var(--muted)}
+.item__flags{display:flex;flex-wrap:wrap;gap:0 var(--sp-3)}
+.item__open{display:grid;place-items:center;width:var(--tap);color:var(--marrom);border-left:1.5px solid var(--line-soft);text-decoration:none}
+.item__open:hover{background:var(--marrom);color:var(--creme)}
+.item__nota{grid-column:1/-1;padding:var(--sp-3) var(--sp-4);font-size:var(--fs-sm);background:var(--paper);border-top:1.5px dashed var(--line);color:var(--muted)}
+.item .foto{border-radius:var(--radius-sm)}
+.ex-vazio{display:grid;justify-items:start;gap:var(--sp-3);padding:var(--sp-5);background:var(--surface);border:1.5px dashed var(--line);border-radius:var(--radius)}
+
+/* Cartão do patrimônio selecionado (sobre o mapa) */
+.sel-card{position:absolute;z-index:500;left:var(--sp-3);right:var(--sp-3);bottom:var(--sp-3);max-width:30rem;display:grid;grid-template-columns:4.5rem 1fr;gap:var(--sp-3);align-items:start;padding:var(--sp-3);background:var(--surface);border:var(--bw) solid var(--marrom);border-radius:var(--radius);box-shadow:var(--shadow)}
+.sel-card .foto{border-radius:var(--radius-sm)}
+.sel-card__txt{display:grid;gap:var(--sp-1);min-width:0;padding-right:2rem}
+.sel-card__txt .eyebrow{font-size:.7rem}
+.sel-card__nome{font-size:var(--fs-lg)}
+.sel-card__tags{display:flex;flex-wrap:wrap;gap:var(--sp-2);align-items:center}
+.sel-card__desc{font-size:var(--fs-sm);color:var(--muted)}
+.sel-card>.btn{grid-column:1/-1;justify-self:stretch}
+.sel-card__x{position:absolute;top:var(--sp-1);right:var(--sp-1);display:grid;place-items:center;width:var(--tap);height:var(--tap);background:none;border:0;border-radius:50%}
+.sel-card__x:hover{background:var(--track)}
+
+/* Desktop: lista e mapa lado a lado, com rolagem própria na lista */
+@media (min-width:64rem){
+  .ex-bar{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+  .ex-bar .ex-busca{grid-column:1}
+  .ex-bar .chips{grid-column:2;justify-content:flex-end}
+  .ex-bar .ex-selects,.ex-bar .ex-resumo{grid-column:1/-1}
+  .ex-grid{grid-template-columns:minmax(20rem,25rem) minmax(0,1fr);height:clamp(30rem,calc(100dvh - 21rem),48rem);align-items:stretch}
+  .ex-lista{overflow-y:auto;padding:3px;margin:-3px;overscroll-behavior:contain}
+  .ex-mapa{height:100%}
+  .sel-card{grid-template-columns:5.5rem 1fr auto;align-items:center}
+  .sel-card>.btn{grid-column:auto;justify-self:end}
+  .sel-card__txt{padding-right:0}
+  .sel-card__x{top:var(--sp-1);right:var(--sp-1)}
+}
+/* Telas estreitas: alterna entre mapa e lista */
+@media (max-width:63.99rem){
+  .vista-tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:var(--sp-3);border:var(--bw) solid var(--marrom);border-radius:999px;overflow:hidden;background:var(--surface)}
+  .vista-tab{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);min-height:var(--tap);border:0;background:none;font-weight:700}
+  .vista-tab[aria-pressed="true"]{background:var(--marrom);color:var(--creme)}
+  .ex-grid[data-vista="mapa"] .ex-lista{display:none}
+  .ex-grid[data-vista="lista"] .ex-mapa{display:none}
+  .ex-lista .itens{max-height:none}
+}
+@media (max-width:39.99rem){
+  .sel-card{left:var(--sp-2);right:var(--sp-2);bottom:var(--sp-2)}
+  .ex-mapa{height:min(68dvh,34rem)}
+}
+/* Celular: o mapa precisa aparecer sem rolar muito */
+@media (max-width:63.99rem){
+  #scr-explorar .page{padding-top:var(--sp-4)}
+  #scr-explorar .page-head{margin-bottom:var(--sp-3)}
+  #scr-explorar .page-head .eyebrow,#scr-explorar .page-head .lead{display:none}
+  #scr-explorar .page-head .t-display{font-size:2rem}
+  .ex-bar{padding:var(--sp-3);gap:var(--sp-2)}
+}
